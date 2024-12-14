@@ -8,6 +8,8 @@ function Login() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false); // New state for toggling password visibility
     const [error, setError] = useState("");
+    const [accountStatus, setStatus] = useState("");
+    const [studentId, setStudentID] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -37,10 +39,26 @@ function Login() {
             };
             navigate(roleRoutes[response.data.role] || "/"); // Default route if role is unknown
         } catch (err) {
-            setError("Invalid credentials");
-            console.error(err);
+            setError(err.response.data.error);
+            setStatus(err.response.data?.status);
+            setStudentID(err.response.data?.studentId)
+            console.error(err.response.data);
         }
     };
+
+    const handleValidate = async () => {
+        try {
+          const response = await axios.post('http://localhost:8000/api/send-verification', { 'studentID': studentId });
+          const { email, verified } = response.data;
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            setMessage('Invalid Student_ID'); // Display the specific message for invalid student ID
+          } else {
+            console.error('Error validating student ID:', error);
+            setMessage('An error occurred while validating.');
+          }
+        }
+      };
     
 
     return (
@@ -103,11 +121,18 @@ function Login() {
                                 className="w-72 h-10 bg-[#E4CF3D] rounded-lg text-white hover:text-white hover:bg-blue-500"
                             >Login    
                             </button>
-                            <div className="w-full flex justify-end gap-1">
-                                <p className="flex text-xs">Verify your student id</p>
-                            <Link to="/register">
+                            <div className="w-full flex justify-end gap-1" >
+                                {accountStatus == 'not_verified' ? (<p className="flex text-xs">Verify your student id</p>) : ''}
+                                
+                                {/* <button onClick={handleValidate}
+                                    className="ml-2 bg-green-500 hover:bg-blue-500 transition duration-300 text-white p-2 rounded-lg"
+                                >
+                                    Click Here
+                                </button> */}
+                            {accountStatus == 'not_verified' ? (
+                            <Link onClick={handleValidate()}>
                                 <p className="flex text-xs hover:text-blue-500 underline">click here</p>
-                            </Link>
+                            </Link>) : ''}
                             </div>
                         </div>
                     </div>
