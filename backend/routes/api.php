@@ -68,6 +68,7 @@ Route::get('/students', [FetchStudents::class, 'StudentInformation']);
 // validation register students
 Route::post('/validate-student', [StudentInfoController::class, 'validateStudentId']);
 Route::post('/registerStudentSemester', [StudentInfoController::class, 'registerStudentSemester']);
+Route::get('/validate', [StudentInfoController::class, 'verify']);
 
 // Define routes for FeatureController
 Route::get('/feature', [FeatureController::class, 'feature']); // Fetch all features
@@ -75,11 +76,12 @@ Route::post('/import-features', [FeatureController::class, 'import']); // Import
 
 // EMAIL
 Route::post('/validate-student-id', [EmailController::class, 'validateStudentId']);
-Route::any('/send-verification-email', function () {
-    return response()->json(['error' => 'Method not allowed. Use POST.'], 405);
-})->methods(['GET']);
+// Route::any('/send-verification-email', function () {
+//     return response()->json(['error' => 'Method not allowed. Use POST.'], 405);
+// })->methods(['GET']);
 
 Route::get('/verify-email/{token}', [EmailController::class, 'verifyEmail'])->name('verify.email');
+Route::post('/send-verification', [EmailController::class, 'sendVerificationEmail']);
 
 
 Route::get('/year-levels', [YearLevelController::class, 'index']);
