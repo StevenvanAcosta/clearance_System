@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Bpclogo from "../../assets/bpclogo.png";
-import ScholarshipHeader from '../../components/header/scholarshipofficer/ScholarshipOfficerHeader';
+import ScholarshipHeader from '../../components/header/scholarship/ScholarshipHeader';
 
 const ScholarshipProfile = () => {
   const [userInfo, setUserInfo] = useState({

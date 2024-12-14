@@ -74,14 +74,6 @@ const LibrarianProfile = () => {
           {error && <p className="text-red-500">{error}</p>}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-center">
             <input
-              type="text"
-              name="name"
-              value={userInfo.name}
-              onChange={handleChange}
-              className="h-10 outline outline-1 outline-slate-300 rounded-lg p-2 w-64"
-              placeholder="Fullname"
-            />
-            <input
               type="email"
               name="email"
               value={userInfo.email}

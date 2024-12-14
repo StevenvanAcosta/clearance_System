@@ -1,81 +1,76 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import BpcLogo from "../../../assets/bpclogo.png";
+import React, { useState, useEffect } from "react"; // Make sure to import useEffect
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Added useLocation
 
-const StudentHeader = () => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+const  StudentHeader = () => {
     const [userName, setUserName] = useState(""); // Store the user's name
-    const dropdownRef = useRef(null);
     const navigate = useNavigate();
+    const location = useLocation(); // Get the current route
 
     // Fetch user name on component mount
     useEffect(() => {
         const storedName = localStorage.getItem("userName");
         if (storedName) setUserName(storedName);
     }, []);
-
-    const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setDropdownOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    const onLogout = () => {
+    
+    // Logout handler
+    const onLogout = async () => {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
         if (!confirmLogout) return;
 
-        localStorage.clear(); // Clear all stored data
-        sessionStorage.clear();
-        navigate("/", { replace: true });
-        alert("You have been successfully logged out.");
+        try {
+            // Clear all session-related data
+            localStorage.clear(); // Clear all localStorage items
+            sessionStorage.clear(); // Clear all sessionStorage items
+
+            console.log("Successfully logged out");
+
+            // Redirect to login page and prevent going back
+            navigate("/", { replace: true });
+
+            alert("You have been successfully logged out.");
+        } catch (error) {
+            console.error("Error during logout:", error);
+            alert("An error occurred while logging out. Please try again.");
+        }
     };
 
     return (
-        <div className="w-full">
-            <header className="flex justify-between items-center h-16 bg-[#25632D] text-white px-6">
-                {/* Logo */}
-                <div className="flex items-center">
-                    <img src={BpcLogo} className="w-16" alt="BPC Logo" />
+        <div className="flex">
+            {/* Sidebar */}
+            <div className="w-64 h-screen bg-white text-slate-700 p-5 border-slate-200 border border-1">
+                <p className="text-2xl font-bold px-4">Student Panel</p>
+                <div className="mt-2 text-lg px-4">
+                    {userName ? userName : "Profile"} {/* Display user's name or "Profile" as fallback */}
                 </div>
-
-                {/* Navigation Links */}
-                <nav className="flex items-center gap-6">
-                    <Link className="hover:text-yellow-400 font-semibold" to="/student/dashboard">
+                <div className="w-full h-full mt-8">
+                    <Link
+                        to="/student/dashboard"
+                        className={`block py-2 px-4 rounded transition duration-200 ${
+                            location.pathname === "/sgadviser/approved"
+                                ? "bg-gray-700 text-white"
+                                : "hover:bg-gray-700 hover:text-white"
+                        }`}
+                    >
                         Dashboard
                     </Link>
-
-                    {/* Profile Dropdown */}
-                    <div className="relative" ref={dropdownRef}>
-                        <button
-                            className="hover:text-yellow-400 font-semibold"
-                            onClick={toggleDropdown}
-                            aria-haspopup="true"
-                            aria-expanded={dropdownOpen}
-                        >
-                            {userName || "Profile"} {/* Display the user's name */}
-                        </button>
-                        {dropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg z-10">
-                                <Link className="block px-4 py-2 hover:bg-gray-200" to="/student/profile">
-                                    Profile
-                                </Link>
-                                <button
-                                    className="block w-full text-left px-4 py-2 hover:bg-gray-200"
-                                    onClick={onLogout}
-                                >
-                                    Logout
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </nav>
-            </header>
+                    <Link
+                        to="/student/profile"
+                        className={`block py-2 px-4 rounded transition duration-200 ${
+                            location.pathname === "/sgadviser/profile"
+                                ? "bg-gray-700 text-white"
+                                : "hover:bg-gray-700 hover:text-white"
+                        }`}
+                    >
+                        Profile
+                    </Link>
+                    <button
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                        onClick={onLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

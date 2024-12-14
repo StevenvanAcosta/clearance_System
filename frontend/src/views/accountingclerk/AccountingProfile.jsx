@@ -67,7 +67,7 @@ const AccountingClerkProfile = () => {
   }
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex overflow-hidden">
       <AccountingClerkHeader />
       <div className="w-full h-full flex flex-col">
         <div className="w-full h-screen flex flex-col gap-4 justify-center items-center">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Students } from '../../constant/ConstantApproved';
-import ScholarshipHeader from '../../components/header/scholarshipofficer/ScholarshipOfficerHeader';
+import ScholarshipHeader from '../../components/header/scholarship/ScholarshipHeader';
 
 const ScholarshipStudent = () => {
     const [selectedStudent, setSelectedStudent] = useState(null); // To hold the currently selected student

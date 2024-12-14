@@ -6,7 +6,7 @@
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
-
+use App\Http\Controllers\AddStudentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPassword;
 use App\Http\Controllers\StudentInfoController;
@@ -19,6 +19,7 @@ use App\Http\Controllers\EmailController;
 use App\Http\Controllers\LoginControllerEmail;
 use App\Http\Controllers\YearLevelController;
 use App\Http\Controllers\SignatoryController;
+use App\Http\Controllers\AddSections;
 use App\Mail\VerificationEmail;
 use Illuminate\Support\Facades\Mail;
 
@@ -72,6 +73,8 @@ Route::post('/registerStudentSemester', [StudentInfoController::class, 'register
 // Define routes for FeatureController
 Route::get('/feature', [FeatureController::class, 'feature']); // Fetch all features
 Route::post('/import-features', [FeatureController::class, 'import']); // Import features from a file
+// add students
+Route::post('/add-student', [AddStudentController::class, 'store']);
 
 // EMAIL
 Route::post('/validate-student-id', [EmailController::class, 'validateStudentId']);
@@ -81,10 +84,10 @@ Route::any('/send-verification-email', function () {
 
 Route::get('/verify-email/{token}', [EmailController::class, 'verifyEmail'])->name('verify.email');
 
-
 Route::get('/year-levels', [YearLevelController::class, 'index']);
 Route::post('/year-levels', [YearLevelController::class, 'store']);
 Route::get('/year-levels/{id}', [YearLevelController::class, 'show']);
 Route::put('/year-levels/{id}', [YearLevelController::class, 'update']);
 Route::delete('/year-levels/{id}', [YearLevelController::class, 'destroy']);
-
+// add Section
+Route::post('/add-section', [AddSections::class, 'addSection']);

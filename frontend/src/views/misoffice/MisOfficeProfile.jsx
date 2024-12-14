@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Bpclogo from "../../assets/bpclogo.png";
-import AdminHeader from "../../components/header/admin/AdminHeader"
+import MisOfficeHeader from '../../components/header/misoffice/MisOfficeHeader';
 
 const MisOfficeProfile = () => {
   const [userInfo, setUserInfo] = useState({
@@ -77,7 +77,7 @@ const MisOfficeProfile = () => {
 
   return (
     <div className="w-full h-screen flex overflow-hidden">
-      <AdminHeader />
+      <MisOfficeHeader />
       <div className="w-full h-full flex flex-col">
         <div className="w-full h-screen flex flex-col gap-4 justify-center items-center">
           <img src={Bpclogo} className="w-24" alt="BPCL Logo" />
