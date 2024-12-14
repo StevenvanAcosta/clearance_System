@@ -1,10 +1,10 @@
-// src/components/SampleSideBar.jsx
 import React, { useState, useEffect } from "react"; // Make sure to import useEffect
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Added useLocation
 
 const SgAdviserHeader = () => {
     const [userName, setUserName] = useState(""); // Store the user's name
     const navigate = useNavigate();
+    const location = useLocation(); // Get the current route
 
     // Fetch user name on component mount
     useEffect(() => {
@@ -43,9 +43,36 @@ const SgAdviserHeader = () => {
                     {userName ? userName : "Profile"} {/* Display user's name or "Profile" as fallback */}
                 </div>
                 <div className="w-full h-full mt-8">
-                    <Link to="/sgadviser/approved" className="block py-2 px-4 rounded hover:bg-gray-700 transition hover:text-white duration-200">Approved</Link>
-                    <Link to="/sgadviser/transaction" className="block py-2 px-4 rounded hover:bg-gray-700 transition hover:text-white duration-200">Transaction</Link>
-                    <Link to="/sgadviser/profile" className="block py-2 px-4 rounded hover:bg-gray-700 transition hover:text-white duration-200">Profile</Link>
+                    <Link
+                        to="/sgadviser/approved"
+                        className={`block py-2 px-4 rounded transition duration-200 ${
+                            location.pathname === "/sgadviser/approved"
+                                ? "bg-gray-700 text-white"
+                                : "hover:bg-gray-700 hover:text-white"
+                        }`}
+                    >
+                        Approved
+                    </Link>
+                    <Link
+                        to="/sgadviser/transaction"
+                        className={`block py-2 px-4 rounded transition duration-200 ${
+                            location.pathname === "/sgadviser/transaction"
+                                ? "bg-gray-700 text-white"
+                                : "hover:bg-gray-700 hover:text-white"
+                        }`}
+                    >
+                        Transaction
+                    </Link>
+                    <Link
+                        to="/sgadviser/profile"
+                        className={`block py-2 px-4 rounded transition duration-200 ${
+                            location.pathname === "/sgadviser/profile"
+                                ? "bg-gray-700 text-white"
+                                : "hover:bg-gray-700 hover:text-white"
+                        }`}
+                    >
+                        Profile
+                    </Link>
                     <button
                         className="block w-full text-left px-4 py-2 hover:bg-gray-200"
                         onClick={onLogout}

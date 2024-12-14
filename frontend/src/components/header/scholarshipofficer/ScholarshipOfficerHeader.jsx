@@ -38,7 +38,7 @@ const ScholarshipOfficerHeader = () => {
         <div className="flex">
             {/* Sidebar */}
             <div className="w-64 h-auto bg-white text-slate-700 p-5 border-slate-200 border border-1">
-                <p className="text-2xl font-bold px-4">Scholarship Panel</p>
+                <p className="text-2xl font-bold px-4">Scholarship Officer Panel</p>
                 <div className="mt-2 text-lg px-4">
                     {userName ? userName : "Profile"} {/* Display user's name or "Profile" as fallback */}
                 </div>

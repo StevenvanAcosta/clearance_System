@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Signatory;
+use App\Models\User;
 use Validator;
 
 class SignatoryController extends Controller
@@ -16,6 +17,7 @@ class SignatoryController extends Controller
             'fullname' => 'required|string|unique:signatory',
             'email' => 'required|email|unique:signatory',
             'password' => 'nullable|string|min:55',
+            'role' => 'required|in:Admin,Student,PTCA,Program Head,MIS Office,Accounting Clerk,SG Adviser,Adviser,Scholarship Officer,Scholarship,Librarian,Vp for Research and Extension',
         ]);
 
         if ($validator->fails()) {
@@ -32,6 +34,11 @@ class SignatoryController extends Controller
                 'fullname' => $request->fullname,
                 'email' => $request->email,
                 'password' => bcrypt($password),
+            ]);
+            $user = User::create([
+                'fullname' => $request->fullname,
+                'email' => $request->email,
+                'role' => $request->role,
             ]);
 
             return response()->json(['message' => 'Signatory created successfully!', 'data' => $signatory], 201);

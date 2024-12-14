@@ -1,14 +1,13 @@
 import React from 'react';
 import StudentHeader from '../../components/header/student/StudentHeader';
 // import { Offices } from '../../constant/StudentConstant';
-import { TiUploadOutline } from "react-icons/ti";
 
 const StudentDashboard = () => {
 
   return (
-    <div>
+    <div className='w-full h-full flex overflow-hidden'>
       <StudentHeader />
-      <div className="w-full h-full p-4">
+      <div className="w-full h-screen p-4">
         <p className='flex justify-center text-lg font-semibold mb-5'>Active Clearance</p>
         <table className="table-auto w-[100%] text-left ">
           <thead>

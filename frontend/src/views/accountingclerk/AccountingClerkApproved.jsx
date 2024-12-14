@@ -6,7 +6,7 @@ import AccountingClerkHeader from '../../components/header/accountingclerk/Accou
 
 const AccountingClerkApproved = () => {
   return (
-    <div>
+    <div className='w-full h-screen flex overflow-hidden'>
       <AccountingClerkHeader/>
       <div className="w-full h-full p-4">
               <p className='flex justify-center text-lg font-semibold mb-5'>List of Approved</p>

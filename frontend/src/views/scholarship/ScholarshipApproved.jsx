@@ -1,6 +1,6 @@
 import React from 'react'
 import { Students } from '../../constant/ConstantApproved'
-import ScholarshipHeader from '../../components/header/scholarshipofficer/ScholarshipOfficerHeader'
+import ScholarshipHeader from "../../components/header/scholarship/ScholarshipHeader"
 
 const ScholarshipApproved = () => {
   return (
