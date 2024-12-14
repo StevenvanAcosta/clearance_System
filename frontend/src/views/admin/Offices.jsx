@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdminHeader from "../../components/header/admin/AdminHeader";
 import { FaAngleDown } from "react-icons/fa";
 import axios from 'axios';
+import { Multiselect } from "multiselect-react-dropdown";
 
 
 const Offices = () => {
