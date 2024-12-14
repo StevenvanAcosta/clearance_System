@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyAccount;
 
 class AuthController extends Controller
 {
@@ -91,42 +93,45 @@ class AuthController extends Controller
     }
     
 
-// Function to generate the default password
-private function generateDefaultPassword()
-{
-    return 'Default@123'; // Change this to whatever default password you want
-}
+    // Function to generate the default password
+    private function generateDefaultPassword()
+    {
+        return 'Default@123'; // Change this to whatever default password you want
+    }
 
 
     // Login
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
-
-    try {
-        $email = strtolower($request->email);
-        $user = User::where('email', $email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-            'role' => $user->role,
-            'name' => $user->name, // Add user name here
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        try {
+            $email = strtolower($request->email);
+            $user = User::where('email', $email)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return response()->json(['error' => 'Invalid credentials'], 401);
+            }
+            // check if account verified
+            if(!$user->email_verified_at){
+                return response()->json(['error' => 'Account is not verified', 'status' => 'not_verified', 'studentId' => $user->id], 401);
+            }
+            
+            $token = $user->createToken('auth_token')->plainTextToken;
+            return response()->json([
+                'message' => 'Login successful',
+                'token' => $token,
+                'role' => $user->role,
+                'name' => $user->name, // Add user name here
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e], 500);
+        }
     }
-}
 
 
     // Logout
