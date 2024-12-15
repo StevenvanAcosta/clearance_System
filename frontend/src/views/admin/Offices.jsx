@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import AdminHeader from "../../components/header/admin/AdminHeader";
 import { FaAngleDown } from "react-icons/fa";
 import axios from 'axios';
-import { Multiselect } from "multiselect-react-dropdown";
-
 
 const Offices = () => {
   // State for submenu visibility
@@ -17,30 +15,86 @@ const Offices = () => {
   const [showAddCoursesDialog, setShowAddCoursesDialog] = useState(false);
   const [showAddSchoolYearDialog, setShowAddSchoolYearDialog] = useState(false);
   const [showAddSection, setShowAddSectionDialog] = useState(false);
+  const [showAddYearLevelDialog, setShowAddYearLevel] = useState(false);
   // course
   const [courses, setCourses] = useState([]);
   const [newCourse, setNewCourse] = useState({ course_code: "", course_description: "" });
   const [editingCourse, setEditingCourse] = useState(null); // Holds the course being edited
   // schoolyear
   const [schoolYear, setSchoolYear] = useState("");
+  const [error, setError] = useState("");            // For storing error messages
+  const [successMessage, setSuccessMessage] = useState(""); // For storing success messages
   const [section, setSection] = useState("");
+  const [yearLevel, setYearLevel] = useState('');
+  // sections in courses
+  const [sections, setSections] = useState([]); // List of sections fetched from API
+  const [selectedSections, setSelectedSections] = useState([]); // Stores the selected section IDs
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Handles dropdown visibility
+
 
   // Toggle submenu
   const toggleSubMenu = () => {
     setShowSubMenu((prev) => !prev);
   };
+  // add Year Level
+const handleYearLevelChange = (e) => {
+  setYearLevel(e.target.value);
+};
 
-  // Handle adding a new school year
-  const handleAddSchoolYear = () => {
-    if (schoolYear) {
-      alert(`School Year ${schoolYear} added.`);
-      setSchoolYear(""); // Reset input field
-      setShowAddSchoolYearDialog(false); // Close the dialog
+// add year level
+const handleSubmit = async () => {
+  try {
+    const response = await fetch('http://localhost:8000/api/year-levels', { // Replace with your API endpoint
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ year_level: yearLevel }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Year Level added:', data);
+
+      // Show success alert
+      alert('Year Level added successfully!');
+
+      // Clear the input field after submission
+      setYearLevel('');
+
+      setShowAddYearLevel(false); // Close the modal
     } else {
-      alert("Please enter a valid school year.");
+      const errorData = await response.json();
+      setError(errorData.message || 'Something went wrong');
     }
-  };
+  } catch (error) {
+    setError('This year level is existing');
+  }
+};
 
+const handleAddSchoolYear = async () => {
+  try {
+    // Clear previous messages
+    setError("");
+    setSuccessMessage("");
+
+    // Send the school year data to the backend
+    const response = await axios.post("http://localhost:8000/api/add-school-year", {
+      year_field: schoolYear,
+    });
+
+    // Handle success response
+    setSuccessMessage(response.data.message);  // Set the success message
+    setSchoolYear(""); // Clear input field after successful submission
+  } catch (err) {
+    if (err.response && err.response.data) {
+      // Handle validation error or any other error
+      setError(err.response.data.message || "An error occurred.");
+    } else {
+      setError("An unexpected error occurred.");
+    }
+  }
+};
 
  // Fetch offices from API
  useEffect(() => {
@@ -149,24 +203,80 @@ const handleEditOffice = (id) => {
       alert('Please enter a valid section.');
     }
   };
-  
-// Add course handler
-const handleAddCourse = async () => {
-  try {
-    const response = await axios.post("http://localhost:8000/api/courses", {
-      course_code: newCourse.course_code,
-      course_description: newCourse.course_description,
-    });
-
-    if (response.status === 201) {
-      setCourses([...courses, response.data.data]);
-      setNewCourse({ course_code: "", course_description: "" });
-      setShowAddCoursesDialog(false);
+  // Fetch sections from the API
+  const fetchSections = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/sections"); // Adjust the endpoint if necessary
+      const data = await response.json();
+      setSections(data.sections);
+    } catch (error) {
+      console.error("Error fetching sections:", error);
     }
-  } catch (error) {
-    console.error("Error adding course:", error.response ? error.response.data : error.message);
-  }
-};
+  };
+
+  // Fetch sections on component mount
+  useEffect(() => {
+    fetchSections();
+  }, []);
+
+  // Handle checkbox change
+  const handleCheckboxChange = (id) => {
+    if (selectedSections.includes(id)) {
+      // Remove section from selected
+      setSelectedSections(selectedSections.filter((sectionId) => sectionId !== id));
+    } else {
+      // Add section to selected
+      setSelectedSections([...selectedSections, id]);
+    }
+  };
+
+   // Fetch courses from API
+   const fetchCourses = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/courses");
+      if (response.data.success) {
+        setCourses(response.data.data); // Set courses in state
+      } else {
+        console.error("Failed to fetch courses");
+      }
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
+
+  // Load courses when the component mounts
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  // Refresh courses (e.g., when modal opens)
+  const refreshCourses = () => {
+    fetchCourses();
+  };
+  // Add Course
+  const handleAddCourse = async () => {
+    // Validate required fields
+    if (!newCourse.course_code || !newCourse.course_description) {
+      alert("Both course code and course description are required.");
+      return; // Prevent the API call
+    }
+  
+    try {
+      const response = await axios.post("http://localhost:8000/api/courses", {
+        course_code: newCourse.course_code,
+        course_description: newCourse.course_description,
+      });
+  
+      if (response.status === 201) {
+        setCourses([...courses, response.data.data]);
+        setNewCourse({ course_code: "", course_description: "" });
+        setShowAddCoursesDialog(false);
+      }
+    } catch (error) {
+      console.error("Error adding course:", error.response ? error.response.data : error.message);
+    }
+  };
+  
 
 // Handle delete course
 const handleDeleteCourse = async (index) => {
@@ -238,7 +348,7 @@ const handleUpdateCourse = async () => {
                     className="w-full text-left px-4 py-2"
                     onClick={() => setShowAddSchoolYearDialog(true)} // Show the Add School Year dialog
                   >
-                    School Year
+                    Add School Year
                   </button>
                 </li>
                 <li className="hover:bg-gray-100">
@@ -246,7 +356,15 @@ const handleUpdateCourse = async () => {
                     className="w-full text-left px-4 py-2"
                     onClick={() => setShowAddSectionDialog(true)} // Show the Add School Year dialog
                   >
-                    Section
+                    Add Section
+                  </button>
+                </li>
+                <li className="hover:bg-gray-100">
+                  <button
+                    className="w-full text-left px-4 py-2"
+                    onClick={() => setShowAddYearLevel(true)} // Show the Add School Year dialog
+                  >
+                    Add Year Level
                   </button>
                 </li>
               </ul>
@@ -261,7 +379,6 @@ const handleUpdateCourse = async () => {
       <div className="w-full h-fit flex gap-2 pb-2 pt-2">
         <input
           type="text"
-          value={officeName}
           onChange={(e) => setOfficeName(e.target.value)}
           placeholder="Add Office"
           className="outline outline-1 p-1 outline-slate-200"
@@ -329,7 +446,7 @@ const handleUpdateCourse = async () => {
 
       {/* Add Courses Floating Dialog */}
       {showAddCoursesDialog && (
-         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
          <div className="bg-white p-6 rounded shadow-lg w-96">
            <h2 className="text-lg font-semibold mb-4">Add Courses</h2>
            <div className="mb-4">
@@ -350,6 +467,38 @@ const handleUpdateCourse = async () => {
                onChange={(e) => setNewCourse({ ...newCourse, course_description: e.target.value })}
              />
            </div>
+            {/* select type section to courses */}
+          <div className="relative w-full h-fit">
+              {/* Dropdown toggle button */}
+              <button
+                className="w-full border p-2 text-left"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {selectedSections.length > 0
+                  ? `Selected (${selectedSections.length})`
+                  : "Select Sections"}
+              </button>
+              {/* Dropdown menu */}
+              {isDropdownOpen && (
+                <div className="absolute z-10 bg-white border shadow-md w-full max-h-60 overflow-y-auto">
+                  {sections.map((section) => (
+                    <label
+                      key={section.id}
+                      className="flex items-center p-2 hover:bg-gray-100"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        value={section.id}
+                        checked={selectedSections.includes(section.id)}
+                        onChange={() => handleCheckboxChange(section.id)}
+                      />
+                      {section.section_field}
+                    </label>
+                  ))}
+                </div>
+              )}
+          </div>
            <div className="flex justify-end gap-2">
              <button
                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
@@ -364,41 +513,41 @@ const handleUpdateCourse = async () => {
                Add
              </button>
            </div>
-   
            {/* Courses Table */}
-             <table className="table-auto w-full mt-4 border-collapse border">
-               <thead>
-                 <tr>
-                   <th className="border px-2 py-1">Course Code</th>
-                   <th className="border px-2 py-1">Course Description</th>
-                   <th className="border px-2 py-1">Action</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 {courses.map((course, index) => (
-                   <tr key={index}>
-                     <td className="border px-2 py-1">{course.course_code}</td>
-                     <td className="border px-2 py-1">{course.course_description}</td>
-                     <td className="border px-2 py-1 flex justify-center gap-2">
-                       <button
-                         className="bg-blue-500 text-white px-2 py-1 rounded"
-                         onClick={() => handleEditCourse(index)}
-                       >
-                         Edit
-                       </button>
-                       <button
-                         className="bg-red-500 text-white px-2 py-1 rounded"
-                         onClick={() => handleDeleteCourse(index)}
-                       >
-                         Delete
-                       </button>
-                     </td>
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
+          <div className="overflow-y-auto h-64 mt-4 border border-gray-300">
+            <table className="table-auto w-full border-collapse border">
+              <thead>
+                <tr>
+                  <th className="border px-2 py-1">Course Code</th>
+                  <th className="border px-2 py-1">Course Description</th>
+                  <th className="border px-2 py-1">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {courses.map((course, index) => (
+                  <tr key={index}>
+                    <td className="border px-2 py-1">{course.course_code}</td>
+                    <td className="border px-2 py-1">{course.course_description}</td>
+                    <td className="border px-2 py-1 flex justify-center gap-2">
+                      <button
+                        className="bg-blue-500 text-white px-2 py-1 rounded"
+                        onClick={() => handleEditCourse(index)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-2 py-1 rounded"
+                        onClick={() => handleDeleteCourse(index)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-   
            {/* Edit Modal */}
            {editingCourse && (
              <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
@@ -444,15 +593,20 @@ const handleUpdateCourse = async () => {
              </div>
            )}
          </div>
-       </div>
-   
+        </div>
       )}
-
       {/* Add School Year Floating Dialog */}
       {showAddSchoolYearDialog && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow-lg w-96">
             <h2 className="text-lg font-semibold mb-4">Add School Year</h2>
+
+            {/* Show success or error messages */}
+            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+            {successMessage && (
+              <div className="text-green-500 text-sm mb-4">{successMessage}</div>
+            )}
+
             <div className="mb-4">
               <label className="block text-sm">School Year</label>
               <input
@@ -463,6 +617,7 @@ const handleUpdateCourse = async () => {
                 placeholder="Enter School Year (e.g., 2024-2025)"
               />
             </div>
+
             <div className="flex justify-end gap-2">
               <button
                 className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
@@ -472,7 +627,7 @@ const handleUpdateCourse = async () => {
               </button>
               <button
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                onClick={handleAddSchoolYear} // Add the school year
+                onClick={handleAddSchoolYear} // Trigger the add school year action
               >
                 Add
               </button>
@@ -487,14 +642,14 @@ const handleUpdateCourse = async () => {
             <h2 className="text-lg font-semibold mb-4">Add Section</h2>
             <div className="mb-4">
               <label className="block text-sm">Section</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={section}
-                maxLength={1}
-                onChange={(e) => setSection(e.target.value)}
-                placeholder="Enter Section for Filtering"
-              />
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={section}
+                  maxLength={1}
+                  onChange={(e) => setSection(e.target.value)}
+                  placeholder="Enter Section for Filtering"
+                />
             </div>
             <div className="flex justify-end gap-2">
               <button
@@ -506,6 +661,47 @@ const handleUpdateCourse = async () => {
               <button
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                 onClick={handleAddSection} // Add the Section
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Year Level */}
+      {showAddSchoolYearDialog && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h2 className="text-lg font-semibold mb-4">Add School Year</h2>
+
+            {/* Show success or error messages */}
+            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+            {successMessage && (
+              <div className="text-green-500 text-sm mb-4">{successMessage}</div>
+            )}
+
+            <div className="mb-4">
+              <label className="block text-sm">School Year</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={schoolYear}
+                maxLength={9}
+                onChange={(e) => setSchoolYear(e.target.value)}
+                placeholder="Enter School Year (e.g., 2024-2025)"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                onClick={() => setShowAddSchoolYearDialog(false)} // Close the dialog
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                onClick={handleAddSchoolYear} // Trigger the add school year action
               >
                 Add
               </button>

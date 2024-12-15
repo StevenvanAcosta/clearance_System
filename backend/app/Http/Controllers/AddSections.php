@@ -25,4 +25,14 @@ class AddSections extends Controller
             'section' => $section,
         ], 201);
     }
+    public function fetchSections()
+    {
+        // Retrieve all sections
+        $sections = Sections::all();
+
+        // Return the sections as JSON
+        return response()->json([
+            'sections' => $sections,
+        ]);
+    }
 }

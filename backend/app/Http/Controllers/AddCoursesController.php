@@ -78,11 +78,13 @@ class AddCoursesController extends Controller
             return response()->json(['message' => 'Server error', 'error' => $e->getMessage()], 500);
         }
     }
-
-    // Get all courses
+    // fetch Course data
     public function index()
     {
-        $course = Course::all();
-        return response()->json($course);
+        $courses = Course::all();
+        return response()->json([
+            'success' => true,
+            'data' => $courses
+        ], 200);
     }
 }

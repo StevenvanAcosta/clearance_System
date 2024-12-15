@@ -130,7 +130,7 @@ function Login() {
                                     Click Here
                                 </button> */}
                             {accountStatus == 'not_verified' ? (
-                            <Link onClick={handleValidate()}>
+                            <Link onClick={handleValidate}>
                                 <p className="flex text-xs hover:text-blue-500 underline">click here</p>
                             </Link>) : ''}
                             </div>
