@@ -6,6 +6,6 @@
 <body>
     <h1>Email Verification</h1>
     <p>Click the link below to verify your email address:</p>
-    <a href="{{ $url }}">{{ $url }}</a>
+    <a href="{{ $url }}"> Click Here to Verify your Account</a>
 </body>
 </html>

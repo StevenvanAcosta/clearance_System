@@ -20,6 +20,7 @@ use App\Http\Controllers\LoginControllerEmail;
 use App\Http\Controllers\YearLevelController;
 use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\AddSections;
+use App\Http\Controllers\AddSchoolYear;
 use App\Mail\VerificationEmail;
 use Illuminate\Support\Facades\Mail;
 
@@ -35,8 +36,7 @@ Route::delete('/offices/{id}', [AddOfficeController::class, 'deleteOffice']);
 
 // SIGNATORY CREATE!!!
 Route::post('/signatory', [SignatoryController::class, 'store']);
-
-
+// add courses
 Route::get('/courses', [AddCoursesController::class, 'index']); // Fetch all courses
 Route::post('/courses', [AddCoursesController::class, 'store']); // Add new course
 Route::put('/courses/{id}', [AddCoursesController::class, 'update']); // Edit existing course
@@ -91,5 +91,8 @@ Route::post('/year-levels', [YearLevelController::class, 'store']);
 Route::get('/year-levels/{id}', [YearLevelController::class, 'show']);
 Route::put('/year-levels/{id}', [YearLevelController::class, 'update']);
 Route::delete('/year-levels/{id}', [YearLevelController::class, 'destroy']);
+// add school year
+Route::post('/add-school-year', [AddSchoolYear::class, 'create']);
 // add Section
 Route::post('/add-section', [AddSections::class, 'addSection']);
+Route::get('/sections', [AddSections::class, 'fetchSections']);
