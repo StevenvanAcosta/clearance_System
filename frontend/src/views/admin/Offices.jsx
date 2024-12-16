@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import AdminHeader from "../../components/header/admin/AdminHeader";
 import { FaAngleDown } from "react-icons/fa";
 import axios from 'axios';
-import { Multiselect } from "multiselect-react-dropdown";
 
 
 const Offices = () => {
@@ -24,6 +23,8 @@ const Offices = () => {
   // schoolyear
   const [schoolYear, setSchoolYear] = useState("");
   const [section, setSection] = useState("");
+   // Set up state for the toggle, initially false
+  const [isToggled, setIsToggled] = useState(false);
 
   // Toggle submenu
   const toggleSubMenu = () => {
@@ -168,6 +169,10 @@ const handleAddCourse = async () => {
   }
 };
 
+const handleSaveSignatory = async () => {
+  console.log(checkboxStates);
+}
+
 // Handle delete course
 const handleDeleteCourse = async (index) => {
   const courseToDelete = courses[index];
@@ -205,7 +210,125 @@ const handleUpdateCourse = async () => {
     console.error("Error updating course:", error.response ? error.response.data : error.message);
   }
 };
-  
+
+ // State to manage which checkboxes are selected in the main list
+ const [selectedMain, setSelectedMain] = useState([]);
+
+ // State to manage which checkboxes are selected in the nested lists
+ const [nestedSelections, setNestedSelections] = useState({});
+
+ // State to manage which checkboxes are selected in the third-level nested lists
+ const [thirdLevelSelections, setThirdLevelSelections] = useState({});
+
+ // Main checkbox list data
+ const mainItems = [
+   { id: 1, label: 'BSIT' },
+   { id: 2, label: 'BSCS' },
+   { id: 3, label: 'BSIS' }
+ ];
+
+ // Nested checkbox lists data (Second Level)
+ const nestedItems = {
+   1: [
+    { id: 1, label: '1st Year' },
+    { id: 2, label: '2nd Year' },
+    { id: 3, label: '3rd Year' },
+    { id: 4, label: '4th Year' }
+   ],
+   2: [
+    { id: 1, label: '1st Year' },
+    { id: 2, label: '2nd Year' },
+    { id: 3, label: '3rd Year' },
+    { id: 4, label: '4th Year' }
+   ],
+   3: [
+    { id: 1, label: '1st Year' },
+    { id: 2, label: '2nd Year' },
+    { id: 3, label: '3rd Year' },
+    { id: 4, label: '4th Year' }
+   ]
+ };
+
+ // Third-level nested checkbox lists data
+ const thirdLevelItems = {
+   1: {
+     1: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ],
+     2: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ]
+   },
+   2: {
+     1: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ],
+     2: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ]
+   },
+   3: {
+     1: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ],
+     2: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ]
+   }
+ };
+
+ // Handle the checkbox change for the main list
+ const handleMainCheckboxChange = (id) => {
+   setSelectedMain((prev) => {
+     if (prev.includes(id)) {
+       return prev.filter(item => item !== id);
+     } else {
+       return [...prev, id];
+     }
+   });
+ };
+
+ // Handle the checkbox change for the second-level (nested) list
+ const handleNestedCheckboxChange = (mainId, subId) => {
+   setNestedSelections((prev) => {
+     const updatedNested = { ...prev };
+     if (!updatedNested[mainId]) {
+       updatedNested[mainId] = [];
+     }
+     
+     if (updatedNested[mainId].includes(subId)) {
+       updatedNested[mainId] = updatedNested[mainId].filter(item => item !== subId);
+     } else {
+       updatedNested[mainId] = [...updatedNested[mainId], subId];
+     }
+     return updatedNested;
+   });
+ };
+
+ // Handle the checkbox change for the third-level (subsubitems) list
+ const handleThirdLevelCheckboxChange = (event, mainId, subId, thirdId) => {
+   setThirdLevelSelections((prev) => {
+     const updatedThirdLevel = { ...prev };
+     if (!updatedThirdLevel[mainId]) {
+       updatedThirdLevel[mainId] = {};
+     }
+     if (!updatedThirdLevel[mainId][subId]) {
+       updatedThirdLevel[mainId][subId] = [];
+     }
+     if (!event.target.checked) {
+       updatedThirdLevel[mainId][subId] = updatedThirdLevel[mainId][subId].filter(item => item !== thirdId);
+     } else {
+       updatedThirdLevel[mainId][subId] = [...updatedThirdLevel[mainId][subId], thirdId];
+     }
+     return updatedThirdLevel;
+   });
+ };
 
   return (
     <div className="w-full h-screen flex overflow-hidden">
@@ -300,32 +423,94 @@ const handleUpdateCourse = async () => {
         </tbody>
       </table>
     </div>
-          <div className="w-1/2 h-screen p-2">
-            <p className=" text-2xl mb-3">Create Signatory</p>
-            <div className="w-full h-screen flex gap-2 flex-col">
-              <input type="text" placeholder="Enter Fullname" className="h-10 outline outline-1 outline-slate-300 p-2"/>
-              <input type="text" placeholder="Email" className="h-10 outline outline-1 outline-slate-300 p-2"/>
-              {/* Populate the select with options dynamically */}
-                <select 
-                  className="h-10 outline outline-1 outline-slate-300"
-                  value={officeName}
-                  onChange={(e) => setOfficeName(e.target.value)}
-                >
-                  <option value="" disabled>Select Office</option>
-                  {/* Dynamically render the office options */}
-                  {offices.map((office) => (
-                    <option key={office.id} value={office.office_name}>
-                      {office.office_name}
-                    </option>
-                  ))}
-                </select>
-              <div className="w-full h-96 flex items-end justify-end">
-                <button className="bg-blue-500 w-[20%] rounded-lg h-10 hover:bg-green-500 text-white p-1">Add</button>
+    <div className="w-1/2 h-screen p-2">
+
+          <p className=" text-2xl mb-3">Create Signatory</p>
+          <div className="w-full h-screen flex gap-2 flex-col">
+            <input type="text" placeholder="Enter Fullname" className="h-10 outline outline-1 outline-slate-300 p-2"/>
+            <input type="text" placeholder="Email" className="h-10 outline outline-1 outline-slate-300 p-2"/>
+            {/* Populate the select with options dynamically */}
+              <select 
+                className="h-10 outline outline-1 outline-slate-300"
+                value={officeName}
+                onChange={(e) => setOfficeName(e.target.value)}
+              >
+                <option value="" disabled>Select Office</option>
+                {/* Dynamically render the office options */}
+                {offices.map((office) => (
+                  <option key={office.id} value={office.office_name}>
+                    {office.office_name}
+                  </option>
+                ))}
+              </select>
+              <div>
+              <div>
+      <h2>Navigation Tabs with Multiple Levels of Checkboxes</h2>
+      
+      {/* Main List of checkboxes */}
+      <div className="main-checkboxes">
+        {mainItems.map(item => (
+          <div key={item.id}>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedMain.includes(item.id)}
+                onChange={() => handleMainCheckboxChange(item.id)}
+              />
+              {item.label}
+            </label>
+
+            {/* Nested checkboxes visible when the main item is selected */}
+            {selectedMain.includes(item.id) && (
+              <div className="nested-checkboxes" style={{ paddingLeft: '20px' }}>
+                {nestedItems[item.id].map(subItem => (
+                  <div key={subItem.id}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={nestedSelections[item.id]?.includes(subItem.id) || false}
+                        onChange={() => handleNestedCheckboxChange(item.id, subItem.id)}
+                      />
+                      {subItem.label}
+                    </label>
+
+                    {/* Third-level nested checkboxes visible when a second-level item is selected */}
+                    {nestedSelections[item.id]?.includes(subItem.id) && (
+                      <div className="third-level-checkboxes" style={{ paddingLeft: '40px' }}>
+                        {thirdLevelItems[item.id]?.[subItem.id]?.map(thirdItem => (
+                          <div key={thirdItem.id}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={thirdLevelSelections[item.id]?.[subItem.id]?.includes(thirdItem.id) || false}
+                                onChange={(e) => handleThirdLevelCheckboxChange(e, item.id, subItem.id, thirdItem.id)}
+                              />
+                              {thirdItem.label}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+
+    </div>
+          {/* <Tabs tabs={tabsData} /> */}
+            <div className="w-full h-96 flex">
+              <button className="bg-blue-500 w-[20%] rounded-lg h-10 hover:bg-green-500 text-white p-1" onClick={handleSaveSignatory}>Add</button>
             </div>
           </div>
-        </div>
+    </div>
+
       </div>
+    </div>
 
       {/* Add Courses Floating Dialog */}
       {showAddCoursesDialog && (

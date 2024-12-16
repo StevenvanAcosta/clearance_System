@@ -30,12 +30,12 @@ class EmailController extends Controller
 public function sendVerificationEmail(Request $request)
 {
     $user = User::where("id",$request->studentID)->first();
-    // Generate a secure token (you can also use signed routes here)
     // generate api to send in email
-    $verificationUrl = route('verify.email', ['token' => base64_encode($request->studentId)]);
-
+    // Generate a secure token (you can also use signed routes here)  
+    $verificationUrl = route('verify.email', ['token' => base64_encode($request->studentID)]);
+    
     // Send email using the Mailable
-    Mail::to($user->email)->send(new VerificationEmail($verificationUrl));
+    Mail::to("jinsstar27@gmail.com")->send(new VerificationEmail($verificationUrl));
 
     return response()->json(['message' => 'Verification email sent successfully']);
 }
