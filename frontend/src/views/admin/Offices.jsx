@@ -3,6 +3,7 @@ import AdminHeader from "../../components/header/admin/AdminHeader";
 import { FaAngleDown } from "react-icons/fa";
 import axios from 'axios';
 
+
 const Offices = () => {
   // State for submenu visibility
   const [showSubMenu, setShowSubMenu] = useState(false);
@@ -23,6 +24,7 @@ const Offices = () => {
   const [error, setError] = useState("");            // For storing error messages
   const [successMessage, setSuccessMessage] = useState(""); // For storing success messages
   const [section, setSection] = useState("");
+   // Set up state for the toggle, initially false
   const [yearLevel, setYearLevel] = useState('');
   // sections in courses
   const [sections, setSections] = useState([]); // List of sections fetched from API
@@ -288,6 +290,10 @@ const handleEditOffice = (id) => {
   };
   
 
+const handleSaveSignatory = async () => {
+  console.log(checkboxStates);
+}
+
 // Handle delete course
 const handleDeleteCourse = async (index) => {
   const courseToDelete = courses[index];
@@ -325,7 +331,125 @@ const handleUpdateCourse = async () => {
     console.error("Error updating course:", error.response ? error.response.data : error.message);
   }
 };
-  
+
+ // State to manage which checkboxes are selected in the main list
+ const [selectedMain, setSelectedMain] = useState([]);
+
+ // State to manage which checkboxes are selected in the nested lists
+ const [nestedSelections, setNestedSelections] = useState({});
+
+ // State to manage which checkboxes are selected in the third-level nested lists
+ const [thirdLevelSelections, setThirdLevelSelections] = useState({});
+
+ // Main checkbox list data
+ const mainItems = [
+   { id: 1, label: 'BSIT' },
+   { id: 2, label: 'BSCS' },
+   { id: 3, label: 'BSIS' }
+ ];
+
+ // Nested checkbox lists data (Second Level)
+ const nestedItems = {
+   1: [
+    { id: 1, label: '1st Year' },
+    { id: 2, label: '2nd Year' },
+    { id: 3, label: '3rd Year' },
+    { id: 4, label: '4th Year' }
+   ],
+   2: [
+    { id: 1, label: '1st Year' },
+    { id: 2, label: '2nd Year' },
+    { id: 3, label: '3rd Year' },
+    { id: 4, label: '4th Year' }
+   ],
+   3: [
+    { id: 1, label: '1st Year' },
+    { id: 2, label: '2nd Year' },
+    { id: 3, label: '3rd Year' },
+    { id: 4, label: '4th Year' }
+   ]
+ };
+
+ // Third-level nested checkbox lists data
+ const thirdLevelItems = {
+   1: {
+     1: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ],
+     2: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ]
+   },
+   2: {
+     1: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ],
+     2: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ]
+   },
+   3: {
+     1: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ],
+     2: [
+      { id: 1, label: 'Section A' },
+      { id: 2, label: 'Section B' }
+     ]
+   }
+ };
+
+ // Handle the checkbox change for the main list
+ const handleMainCheckboxChange = (id) => {
+   setSelectedMain((prev) => {
+     if (prev.includes(id)) {
+       return prev.filter(item => item !== id);
+     } else {
+       return [...prev, id];
+     }
+   });
+ };
+
+ // Handle the checkbox change for the second-level (nested) list
+ const handleNestedCheckboxChange = (mainId, subId) => {
+   setNestedSelections((prev) => {
+     const updatedNested = { ...prev };
+     if (!updatedNested[mainId]) {
+       updatedNested[mainId] = [];
+     }
+     
+     if (updatedNested[mainId].includes(subId)) {
+       updatedNested[mainId] = updatedNested[mainId].filter(item => item !== subId);
+     } else {
+       updatedNested[mainId] = [...updatedNested[mainId], subId];
+     }
+     return updatedNested;
+   });
+ };
+
+ // Handle the checkbox change for the third-level (subsubitems) list
+ const handleThirdLevelCheckboxChange = (event, mainId, subId, thirdId) => {
+   setThirdLevelSelections((prev) => {
+     const updatedThirdLevel = { ...prev };
+     if (!updatedThirdLevel[mainId]) {
+       updatedThirdLevel[mainId] = {};
+     }
+     if (!updatedThirdLevel[mainId][subId]) {
+       updatedThirdLevel[mainId][subId] = [];
+     }
+     if (!event.target.checked) {
+       updatedThirdLevel[mainId][subId] = updatedThirdLevel[mainId][subId].filter(item => item !== thirdId);
+     } else {
+       updatedThirdLevel[mainId][subId] = [...updatedThirdLevel[mainId][subId], thirdId];
+     }
+     return updatedThirdLevel;
+   });
+ };
 
   return (
     <div className="w-full h-screen flex overflow-hidden">
@@ -382,53 +506,79 @@ const handleUpdateCourse = async () => {
           )}
       </div>
 
-              {/* Manage Offices */}
-              <div className="w-full flex h-screen">
-            <div className="w-full h-screen">
-            <p className="text-2xl">Manage Offices</p>
-            <div className="w-full h-fit flex gap-2 pb-2 pt-2">
-              <input
-                type="text"
-                onChange={(e) => setOfficeName(e.target.value)}
-                placeholder="Add Office"
-                className="outline outline-1 p-1 outline-slate-200"
-              />
-              <button
-                onClick={handleAddOffice}
-                className="bg-blue-500 p-2 text-white rounded-lg">
-                Add
-              </button>
-            </div>
-            <table className="table-auto w-full text-center border border-collapse border-gray-200">
-              <thead className="bg-slate-200 h-10">
-                <tr>
-                  <th>Offices</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {offices.map(office => (
-                  <tr key={office.id} className="hover:bg-slate-100">
-                    <td>{office.office_name}</td>
-                    <td>
-                      <button
-                        onClick={() => handleEditOffice(office.id)}
-                        className="bg-blue-500 text-white p-1">
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteOffice(office.id)}
-                        className="bg-red-500 text-white p-1">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* Manage Offices */}
+        <div className="w-full flex h-screen">
+       <div className="w-1/2 h-screen">
+      <p className="text-2xl">Manage Offices</p>
+      <div className="w-full h-fit flex gap-2 pb-2 pt-2">
+        <input
+          type="text"
+          onChange={(e) => setOfficeName(e.target.value)}
+          placeholder="Add Office"
+          className="outline outline-1 p-1 outline-slate-200"
+        />
+        <button
+          onClick={handleAddOffice}
+          className="bg-blue-500 p-2 text-white rounded-lg">
+          Add
+        </button>
       </div>
+      <table className="table-auto w-full text-center border border-collapse border-gray-200">
+        <thead className="bg-slate-200 h-10">
+          <tr>
+            <th>Offices</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {offices.map(office => (
+            <tr key={office.id} className="hover:bg-slate-100">
+              <td>{office.office_name}</td>
+              <td>
+                <button
+                  onClick={() => handleEditOffice(office.id)}
+                  className="bg-blue-500 text-white p-1">
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteOffice(office.id)}
+                  className="bg-red-500 text-white p-1">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+          <div className="w-1/2 h-screen p-2">
+            <p className=" text-2xl mb-3">Create Signatory</p>
+            <div className="w-full h-screen flex gap-2 flex-col">
+              <input type="text" placeholder="Enter Fullname" className="h-10 outline outline-1 outline-slate-300 p-2"/>
+              <input type="text" placeholder="Email" className="h-10 outline outline-1 outline-slate-300 p-2"/>
+              {/* Populate the select with options dynamically */}
+                <select 
+                  className="h-10 outline outline-1 outline-slate-300"
+                  value={officeName}
+                  onChange={(e) => setOfficeName(e.target.value)}
+                >
+                  <option value="" disabled>Select Office</option>
+                  {/* Dynamically render the office options */}
+                  {offices.map((office) => (
+                    <option key={office.id} value={office.office_name}>
+                      {office.office_name}
+                    </option>
+                  ))}
+                </select>
+              <div className="w-full h-96 flex items-end justify-end">
+                <button className="bg-blue-500 w-[20%] rounded-lg h-10 hover:bg-green-500 text-white p-1">Add</button>
+              </div>
+            </div>
+          </div>
+    </div>
+
+      </div>
+    </div>
 
       {/* Add Courses Floating Dialog */}
       {showAddCoursesDialog && (
