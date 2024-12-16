@@ -36,7 +36,7 @@ const FeatureTable = () => {
       {error && <div className="text-red-500">{error}</div>}
       <table className="min-w-full table-auto border-collapse">
         <thead>
-          <tr className="bg-slate-500">
+          <tr className="bg-slate-300 h-10">
             <th className="px-4 py-2 border">Student Id</th>
             <th className="px-4 py-2 border">Fullname</th>
             <th className="px-4 py-2 border">Email</th> {/* Email column */}

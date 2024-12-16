@@ -48,19 +48,28 @@ const Record = () => {
 
             {/* Other filters */}
             <select className='w-[12%] h-10 outline outline-1 outline-slate-400 rounded-lg'>
-              <option>Year Level</option>
+              <option disabled>Year Level</option>
+              <option>First Year</option>
+              <option>Second Year</option>
+              <option>Third Year</option>
+              <option>Fourth Year</option>
             </select>
             <select className='w-[12%] h-10 outline outline-1 outline-slate-400 rounded-lg'>
               <option>Section</option>
             </select>
             <select className='w-[12%] h-10 outline outline-1 outline-slate-400 rounded-lg'>
-              <option>Select Semester</option>
+              <option disabled>Select Semester</option>
+              <option>First Semester</option>
+              <option>Second Semester</option>
             </select>
             <select className='w-[12%] h-10 outline outline-1 outline-slate-400 rounded-lg'>
-              <option>School Year</option>
+              <option disabled>School Year</option>
+              <option>2024-2025</option>
             </select>
             <select className='w-[12%] h-10 outline outline-1 outline-slate-400 rounded-lg'>
-              <option>Status</option>
+              <option disabled>Status</option>
+              <option>Cleared</option>
+              <option>Not Cleared</option>
             </select>
           </div>
 
@@ -79,6 +88,7 @@ const Record = () => {
                   <th className="users-th"><p className='flex justify-center text-sm'>Section</p></th>
                   <th className="users-th"><p className='flex justify-center text-sm'>Semester</p></th>
                   <th className="users-th"><p className='flex justify-center text-sm'>School year</p></th>
+                  <th className="users-th"><p className='flex justify-center text-sm'>Status</p></th>
                   <th className="users-th">
                     <p className="flex justify-center"></p>
                   </th>

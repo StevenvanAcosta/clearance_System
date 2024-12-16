@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Bpclogo from "../../assets/bpclogo.png";
 import ScholarshipHeader from '../../components/header/scholarshipofficer/ScholarshipOfficerHeader';
+import ProgramHeadHeader from '../../components/header/programhead/ProgramHeadHeader';
 
 const ScholarshipProfile = () => {
   const [userInfo, setUserInfo] = useState({
@@ -77,7 +78,7 @@ const ScholarshipProfile = () => {
 
   return (
     <div className="w-full h-screen flex overflow-hidden">
-      <ScholarshipHeader />
+      <ProgramHeadHeader />
       <div className="w-full h-full flex flex-col">
         <div className="w-full h-screen flex flex-col gap-4 justify-center items-center">
           <img src={Bpclogo} className="w-24" alt="BPCL Logo" />

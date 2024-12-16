@@ -50,11 +50,6 @@ class AuthController extends Controller
 
     //     return response()->json(['message' => 'User registered successfully'], 201);
     // }
-
-
-
-
-
     public function register(Request $request)
     {
         $request->validate([
@@ -75,9 +70,7 @@ class AuthController extends Controller
         //         'section' => 'required|string',
         //     ]);
         // }
-    
         $defaultPassword = $this->generateDefaultPassword();
-    
         $user = User::create([
             'name' => trim($request->name), // Trimmed to ensure no extra spaces
             'email' => $request->email,
@@ -88,18 +81,13 @@ class AuthController extends Controller
             // 'year' => $request->year,
             // 'section' => $request->section,
         ]);
-    
         return response()->json(['message' => 'User registered successfully'], 201);
     }
-    
-
     // Function to generate the default password
     private function generateDefaultPassword()
     {
         return 'Default@123'; // Change this to whatever default password you want
     }
-
-
     // Login
     public function login(Request $request)
     {
@@ -107,7 +95,6 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
         try {
             $email = strtolower($request->email);
             $user = User::where('email', $email)->first();
@@ -127,12 +114,10 @@ class AuthController extends Controller
                 'role' => $user->role,
                 'name' => $user->name, // Add user name here
             ]);
-
         } catch (\Exception $e) {
             return response()->json(['error' => $e], 500);
         }
     }
-
 
     // Logout
     public function logout(Request $request)
@@ -141,13 +126,13 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out successfully']);
     }
 
-
     // show Users
     public function getUsers()
     {
         $users = User::all();
         return response()->json($users);
     }
+
     // Update user profile
     public function updateProfileAdmin(Request $request)
     {
@@ -175,6 +160,7 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Profile updated successfully'], 200);
     }
+
     public function updateProfileStudent(Request $request)
     {
         $request->validate([
@@ -194,7 +180,6 @@ class AuthController extends Controller
         if ($request->filled('password') && Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'New password cannot be the same as the current password'], 400);
         }
-
         // Update user information
         $user->name = $request->name;
         $user->email = $request->email;
@@ -207,12 +192,10 @@ class AuthController extends Controller
         return response()->json(['message' => 'Profile updated successfully'], 200);
     }
 
-
     // Show logged-in user data
     public function getUser(Request $request)
     {
         return response()->json($request->user());
-    }
-    
+    }   
 }
 

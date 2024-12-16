@@ -16,7 +16,7 @@ const Transaction = () => {
     };
 
     return (
-        <div>
+        <div className='w-full h-screen flex'>
             <SgAdviserHeader />
             <div className="w-full h-full p-4">
                 <p className="flex justify-center text-lg font-semibold mb-5">List of Approved</p>

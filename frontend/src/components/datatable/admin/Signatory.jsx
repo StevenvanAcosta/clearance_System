@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
+import SetActive from "./SetActive";
 
 const SignatoryTable = () => {
   const [features, setFeatures] = useState([]);
@@ -11,7 +12,7 @@ const SignatoryTable = () => {
   const [currentFeature, setCurrentFeature] = useState(null);
   const [isAllSelected, setIsAllSelected] = useState(false); // To manage "Select all" checkbox state
   const [selectedFeatures, setSelectedFeatures] = useState([]); // To track selected features
-
+  
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -117,7 +118,10 @@ const SignatoryTable = () => {
             </button>
           )}
         </div>
-        <div className="w-full h-fit justify-end flex">
+        <div className="w-full h-fit justify-end flex">   
+        <div className="flex justify-start mr-2">
+            <SetActive/>
+        </div>
           <div className="w-1/2 mr-2 mb-2">
             <input
               type="text"

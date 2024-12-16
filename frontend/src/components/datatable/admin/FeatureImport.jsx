@@ -38,7 +38,7 @@ const FeatureImport = ({ onImportSuccess }) => {
       const data = await response.json();
       alert(data.message);
 
-      if (data.message === "Features imported successfully") {
+      if (data.message === "Imported successfully") {
         onImportSuccess(); // Trigger a table refresh
       }
     } catch (error) {

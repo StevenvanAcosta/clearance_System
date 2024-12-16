@@ -167,8 +167,8 @@ const AddUser = () => {
               required
             >
               <option value="" disabled>Select Signatory</option>
-              <option value="Student">Student</option>
-              <option value="Admin">Admin</option>
+              {/* <option value="Student">Student</option>
+              <option value="Admin">Admin</option> */}
               <option value="PTCA">PTCA</option>
               <option value="Program Head">Program Head</option>
               <option value="MIS Office">MIS Office</option>

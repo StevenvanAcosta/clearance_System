@@ -73,7 +73,6 @@ function Login() {
                             BPC
                         </p>
                         <p className="text-white font-semibold text-4xl">Clearance System</p>
-                        <p className="text-yellow-400 font-semibold text-xs ">"Dedicated to Knowledge, Committed to Success."</p>
                     </div>
                     <div className="w-1/2 h-screen flex flex-col justify-center items-center">
                         <div className="w-96 h-fit bg-white flex flex-col justify-center items-center gap-3 rounded-3xl p-14">
@@ -122,7 +121,7 @@ function Login() {
                             >Login    
                             </button>
                             <div className="w-full flex justify-end gap-1" >
-                                {accountStatus == 'not_verified' ? (<p className="flex text-xs">Verify your student id</p>) : ''}
+                                {accountStatus == 'not_verified' ? (<p className="flex text-xs">Verify your email</p>) : ''}
                                 
                                 {/* <button onClick={handleValidate}
                                     className="ml-2 bg-green-500 hover:bg-blue-500 transition duration-300 text-white p-2 rounded-lg"

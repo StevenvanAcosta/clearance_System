@@ -44,6 +44,7 @@ import SetSemester from "../views/admin/SetSemester";
 import Record from "../views/admin/Record";
 import StudentInformation from "../views/admin/StudentInformation";
 import AddCourses from "../views/admin/AddCourses";
+import AccountingClearkSetActive from "../views/accountingclerk/AccountingClearkSetActive";
 
 function DefineRoutes() {
     return (
@@ -263,6 +264,14 @@ function DefineRoutes() {
                 element={
                     <PrivateRoute allowedRoles={["Accounting Clerk"]}>
                         <AccountingClerkProfile />
+                    </PrivateRoute>
+                } 
+                />
+                <Route 
+                path="/accountingclerk/setactive" 
+                element={
+                    <PrivateRoute allowedRoles={["Accounting Clerk"]}>
+                        <AccountingClearkSetActive />
                     </PrivateRoute>
                 } 
                 />

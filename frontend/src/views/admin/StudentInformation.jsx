@@ -138,7 +138,6 @@ const StudentInformation = () => {
             </div>
           </div>
         )}
-
         <FeatureTable searchQuery={searchQuery} data={importedData} />
       </div>
     </div>

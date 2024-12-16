@@ -8,8 +8,6 @@ const Offices = () => {
   const [showSubMenu, setShowSubMenu] = useState(false);
   const yourAuthToken = localStorage.getItem('auth_token');
   // add office
-  const [offices, setOffices] = useState([]);
-  const [officeName, setOfficeName] = useState('');
 
   // State for Add Courses dialog
   const [showAddCoursesDialog, setShowAddCoursesDialog] = useState(false);
@@ -30,7 +28,13 @@ const Offices = () => {
   const [sections, setSections] = useState([]); // List of sections fetched from API
   const [selectedSections, setSelectedSections] = useState([]); // Stores the selected section IDs
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Handles dropdown visibility
+  const [officeName, setOfficeName] = useState('');
+  const [offices, setOffices] = useState([]);
 
+
+
+
+  
 
   // Toggle submenu
   const toggleSubMenu = () => {
@@ -41,10 +45,10 @@ const handleYearLevelChange = (e) => {
   setYearLevel(e.target.value);
 };
 
-// add year level
+// Add Year Level
 const handleSubmit = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/year-levels', { // Replace with your API endpoint
+    const response = await fetch('http://localhost:8000/api/year-levels', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,18 +61,24 @@ const handleSubmit = async () => {
       console.log('Year Level added:', data);
 
       // Show success alert
-      alert('Year Level added successfully!');
+      setSuccessMessage('Year Level added successfully!');
+      setError(''); // Clear any previous error
 
       // Clear the input field after submission
       setYearLevel('');
 
-      setShowAddYearLevel(false); // Close the modal
+      setTimeout(() => {
+        setSuccessMessage(''); // Clear success message after a while
+        setShowAddYearLevel(false); // Close the modal
+      }, 2000);
     } else {
       const errorData = await response.json();
       setError(errorData.message || 'Something went wrong');
+      setSuccessMessage('');
     }
   } catch (error) {
-    setError('This year level is existing');
+    setError('This year level already exists');
+    setSuccessMessage('');
   }
 };
 
@@ -370,76 +380,52 @@ const handleUpdateCourse = async () => {
               </ul>
             </div>
           )}
-        </div>
-
-        {/* Manage Offices */}
-        <div className="w-full flex h-screen">
-       <div className="w-1/2 h-screen">
-      <p className="text-2xl">Manage Offices</p>
-      <div className="w-full h-fit flex gap-2 pb-2 pt-2">
-        <input
-          type="text"
-          onChange={(e) => setOfficeName(e.target.value)}
-          placeholder="Add Office"
-          className="outline outline-1 p-1 outline-slate-200"
-        />
-        <button
-          onClick={handleAddOffice}
-          className="bg-blue-500 p-2 text-white rounded-lg">
-          Add
-        </button>
       </div>
-      <table className="table-auto w-full text-center border border-collapse border-gray-200">
-        <thead className="bg-slate-200 h-10">
-          <tr>
-            <th>Offices</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {offices.map(office => (
-            <tr key={office.id} className="hover:bg-slate-100">
-              <td>{office.office_name}</td>
-              <td>
-                <button
-                  onClick={() => handleEditOffice(office.id)}
-                  className="bg-blue-500 text-white p-1">
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteOffice(office.id)}
-                  className="bg-red-500 text-white p-1">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-          <div className="w-1/2 h-screen p-2">
-            <p className=" text-2xl mb-3">Create Signatory</p>
-            <div className="w-full h-screen flex gap-2 flex-col">
-              <input type="text" placeholder="Enter Fullname" className="h-10 outline outline-1 outline-slate-300 p-2"/>
-              <input type="text" placeholder="Email" className="h-10 outline outline-1 outline-slate-300 p-2"/>
-              {/* Populate the select with options dynamically */}
-                <select 
-                  className="h-10 outline outline-1 outline-slate-300"
-                  value={officeName}
-                  onChange={(e) => setOfficeName(e.target.value)}
-                >
-                  <option value="" disabled>Select Office</option>
-                  {/* Dynamically render the office options */}
-                  {offices.map((office) => (
-                    <option key={office.id} value={office.office_name}>
-                      {office.office_name}
-                    </option>
-                  ))}
-                </select>
-              <div className="w-full h-96 flex items-end justify-end">
-                <button className="bg-blue-500 w-[20%] rounded-lg h-10 hover:bg-green-500 text-white p-1">Add</button>
-              </div>
+
+              {/* Manage Offices */}
+              <div className="w-full flex h-screen">
+            <div className="w-full h-screen">
+            <p className="text-2xl">Manage Offices</p>
+            <div className="w-full h-fit flex gap-2 pb-2 pt-2">
+              <input
+                type="text"
+                onChange={(e) => setOfficeName(e.target.value)}
+                placeholder="Add Office"
+                className="outline outline-1 p-1 outline-slate-200"
+              />
+              <button
+                onClick={handleAddOffice}
+                className="bg-blue-500 p-2 text-white rounded-lg">
+                Add
+              </button>
             </div>
+            <table className="table-auto w-full text-center border border-collapse border-gray-200">
+              <thead className="bg-slate-200 h-10">
+                <tr>
+                  <th>Offices</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {offices.map(office => (
+                  <tr key={office.id} className="hover:bg-slate-100">
+                    <td>{office.office_name}</td>
+                    <td>
+                      <button
+                        onClick={() => handleEditOffice(office.id)}
+                        className="bg-blue-500 text-white p-1">
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteOffice(office.id)}
+                        className="bg-red-500 text-white p-1">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -596,45 +582,7 @@ const handleUpdateCourse = async () => {
         </div>
       )}
       {/* Add School Year Floating Dialog */}
-      {showAddSchoolYearDialog && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-lg font-semibold mb-4">Add School Year</h2>
-
-            {/* Show success or error messages */}
-            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-            {successMessage && (
-              <div className="text-green-500 text-sm mb-4">{successMessage}</div>
-            )}
-
-            <div className="mb-4">
-              <label className="block text-sm">School Year</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={schoolYear}
-                onChange={(e) => setSchoolYear(e.target.value)}
-                placeholder="Enter School Year (e.g., 2024-2025)"
-              />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-                onClick={() => setShowAddSchoolYearDialog(false)} // Close the dialog
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                onClick={handleAddSchoolYear} // Trigger the add school year action
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
       {/* Add Section Floating Dialog */}
       {showAddSection && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
@@ -702,6 +650,50 @@ const handleUpdateCourse = async () => {
               <button
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                 onClick={handleAddSchoolYear} // Trigger the add school year action
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+       {showAddYearLevelDialog && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h2 className="text-lg font-semibold mb-4">Add Year Level</h2>
+
+            {/* Display error or success messages */}
+            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+            {successMessage && (
+              <div className="text-green-500 text-sm mb-4">{successMessage}</div>
+            )}
+
+            <div className="mb-4">
+              <label className="block text-sm">Year Level</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={yearLevel}
+                onChange={(e) => setYearLevel(e.target.value)}
+                placeholder="Enter Year Level (e.g., Grade 10)"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                onClick={() => {
+                  setShowAddYearLevel(false);
+                  setError('');
+                  setSuccessMessage('');
+                  setYearLevel('');
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                onClick={handleSubmit}
               >
                 Add
               </button>

@@ -1,6 +1,10 @@
 // src/components/SampleSideBar.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom"; // Import useLocation
+import { FaUserCheck } from "react-icons/fa";
+import { PiUsersFill } from "react-icons/pi";
+import { FaRegUserCircle } from "react-icons/fa";
+import { TbLogout2 } from "react-icons/tb";
 
 const AccountingClerk = () => {
     const [userName, setUserName] = useState(""); // Store the user's name
@@ -46,38 +50,38 @@ const AccountingClerk = () => {
                 <div className="w-full h-full mt-8">
                     <Link
                         to="/accountingclerk/approved"
-                        className={`block py-2 px-4 rounded transition duration-200 ${
+                        className={`flex gap-2 py-2 px-4 rounded transition duration-200 ${
                             location.pathname === "/adviser/approved"
                                 ? "bg-gray-700 text-white"
                                 : "hover:bg-gray-700 hover:text-white"
                         }`}
-                    >
+                    >   <FaUserCheck size={30}/>
                         Approved
                     </Link>
                     <Link
                         to="/accountingclerk/student"
-                        className={`block py-2 px-4 rounded transition duration-200 ${
+                        className={`flex gap-2 py-2 px-4 rounded transition duration-200 ${
                             location.pathname === "/adviser/student"
                                 ? "bg-gray-700 text-white"
                                 : "hover:bg-gray-700 hover:text-white"
                         }`}
-                    >
+                    >   <PiUsersFill size={30}/>
                         Student
                     </Link>
                     <Link
                         to="/accountingclerk/profile"
-                        className={`block py-2 px-4 rounded transition duration-200 ${
+                        className={`flex gap-2 py-2 px-4 rounded transition duration-200 ${
                             location.pathname === "/adviser/profile"
                                 ? "bg-gray-700 text-white"
                                 : "hover:bg-gray-700 hover:text-white"
                         }`}
-                    >
+                    >   <FaRegUserCircle size={30}/>
                         Profile
                     </Link>
                     <button
-                        className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                        className="flex gap-2 w-full text-left px-4 py-2 hover:bg-gray-200"
                         onClick={onLogout}
-                    >
+                    >   <TbLogout2 size={30}/>
                         Logout
                     </button>
                 </div>

@@ -36,3 +36,4 @@ class AddSections extends Controller
         ]);
     }
 }
+
