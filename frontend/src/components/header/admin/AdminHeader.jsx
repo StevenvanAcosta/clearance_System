@@ -11,6 +11,7 @@ import { RiLogoutBoxFill } from "react-icons/ri";
 const AdminHeader = () => {
     const [userName, setUserName] = useState("");
     const [isStudentMenuOpen, setIsStudentMenuOpen] = useState(false);
+    const [isMangeMenuOpen, setIsManageMenuOpen] = useState(false);
     const [isOfficesMenuOpen, setIsOfficesMenuOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation(); // Get the current route
@@ -40,6 +41,9 @@ const AdminHeader = () => {
 
     const toggleStudentMenu = () => {
         setIsStudentMenuOpen((prev) => !prev);
+    };
+    const toggleManageMenu = () => {
+        setIsManageMenuOpen((prev) => !prev);
     };
 
     return (
@@ -98,7 +102,6 @@ const AdminHeader = () => {
                             </div>
                         )}
                     </div>
-
                     <Link
                         to="/admin/offices"
                         className={` py-2 px-4 rounded flex items-center gap-2 transition duration-200 ${
