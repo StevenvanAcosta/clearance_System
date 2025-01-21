@@ -72,7 +72,7 @@ function Login() {
                             className="w-16 h-fit flex mt-2 " />
                             BPC
                         </p> */}
-                        <p className="text-white font-semibold text-4xl">Clearance System</p>
+                        <p className="text-white font-semibold text-4xl">Clearance System aaaa</p>
                     </div>
                     <div className="w-1/2 h-screen flex flex-col justify-center items-center">
                         <div className="w-96 h-fit bg-white flex flex-col justify-center items-center gap-3 rounded-3xl p-14">
