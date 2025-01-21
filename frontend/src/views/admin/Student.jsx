@@ -48,7 +48,7 @@ const Record = () => {
 
             {/* Other filters */}
             <select className='w-[12%] h-10 outline outline-1 outline-slate-400 rounded-lg'>
-              <option disabled>Year Level</option>
+              <option >Year Level</option>
               <option>First Year</option>
               <option>Second Year</option>
               <option>Third Year</option>

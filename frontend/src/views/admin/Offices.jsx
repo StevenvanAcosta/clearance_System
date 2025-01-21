@@ -9,6 +9,8 @@ const Offices = () => {
   const [showSubMenu, setShowSubMenu] = useState(false);
   const yourAuthToken = localStorage.getItem('auth_token');
   // add office
+  const [offices, setOffices] = useState([]);
+  const [officeName, setOfficeName] = useState('');
 
   // State for Add Courses dialog
   const [showAddCoursesDialog, setShowAddCoursesDialog] = useState(false);
@@ -30,13 +32,7 @@ const Offices = () => {
   const [sections, setSections] = useState([]); // List of sections fetched from API
   const [selectedSections, setSelectedSections] = useState([]); // Stores the selected section IDs
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Handles dropdown visibility
-  const [officeName, setOfficeName] = useState('');
-  const [offices, setOffices] = useState([]);
 
-
-
-
-  
 
   // Toggle submenu
   const toggleSubMenu = () => {
@@ -47,10 +43,10 @@ const handleYearLevelChange = (e) => {
   setYearLevel(e.target.value);
 };
 
-// Add Year Level
+// add year level
 const handleSubmit = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/year-levels', {
+    const response = await fetch('http://localhost:8000/api/year-levels', { // Replace with your API endpoint
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,24 +59,18 @@ const handleSubmit = async () => {
       console.log('Year Level added:', data);
 
       // Show success alert
-      setSuccessMessage('Year Level added successfully!');
-      setError(''); // Clear any previous error
+      alert('Year Level added successfully!');
 
       // Clear the input field after submission
       setYearLevel('');
 
-      setTimeout(() => {
-        setSuccessMessage(''); // Clear success message after a while
-        setShowAddYearLevel(false); // Close the modal
-      }, 2000);
+      setShowAddYearLevel(false); // Close the modal
     } else {
       const errorData = await response.json();
       setError(errorData.message || 'Something went wrong');
-      setSuccessMessage('');
     }
   } catch (error) {
-    setError('This year level already exists');
-    setSuccessMessage('');
+    setError('This year level is existing');
   }
 };
 
@@ -265,30 +255,35 @@ const handleEditOffice = (id) => {
   const refreshCourses = () => {
     fetchCourses();
   };
-  // Add Course
-  const handleAddCourse = async () => {
-    // Validate required fields
-    if (!newCourse.course_code || !newCourse.course_description) {
-      alert("Both course code and course description are required.");
-      return; // Prevent the API call
+ // Add Course
+const handleAddCourse = async () => {
+  // Validate required fields
+  if (!newCourse.course_code || !newCourse.course_description) {
+    alert("Both course code and course description are required.");
+    return; // Prevent the API call
+  }
+
+  try {
+    const response = await axios.post("http://localhost:8000/api/courses", {
+      course_code: newCourse.course_code,
+      course_description: newCourse.course_description,
+    });
+
+    if (response.status === 201) {
+      // Update the state with the new course
+      setCourses([...courses, response.data.data]);
+      setNewCourse({ course_code: "", course_description: "" });
+      setShowAddCoursesDialog(false);
+
+      // Show success alert
+      alert("Course added successfully!");
     }
-  
-    try {
-      const response = await axios.post("http://localhost:8000/api/courses", {
-        course_code: newCourse.course_code,
-        course_description: newCourse.course_description,
-      });
-  
-      if (response.status === 201) {
-        setCourses([...courses, response.data.data]);
-        setNewCourse({ course_code: "", course_description: "" });
-        setShowAddCoursesDialog(false);
-      }
-    } catch (error) {
-      console.error("Error adding course:", error.response ? error.response.data : error.message);
-    }
-  };
-  
+  } catch (error) {
+    console.error("Error adding course:", error.response ? error.response.data : error.message);
+    alert("Failed to add course. Please try again.");
+  }
+};
+
 
 const handleSaveSignatory = async () => {
   console.log(checkboxStates);
@@ -343,9 +338,9 @@ const handleUpdateCourse = async () => {
 
  // Main checkbox list data
  const mainItems = [
-   { id: 1, label: 'BSIT' },
-   { id: 2, label: 'BSCS' },
-   { id: 3, label: 'BSIS' }
+   { id: 1, label: 'BSIS' },
+   { id: 2, label: 'BSAIS' },
+   { id: 3, label: 'BTVTED' }
  ];
 
  // Nested checkbox lists data (Second Level)
@@ -504,7 +499,7 @@ const handleUpdateCourse = async () => {
               </ul>
             </div>
           )}
-      </div>
+        </div>
 
         {/* Manage Offices */}
         <div className="w-full flex h-screen">
@@ -551,28 +546,88 @@ const handleUpdateCourse = async () => {
         </tbody>
       </table>
     </div>
-          <div className="w-1/2 h-screen p-2">
-            <p className=" text-2xl mb-3">Create Signatory</p>
-            <div className="w-full h-screen flex gap-2 flex-col">
-              <input type="text" placeholder="Enter Fullname" className="h-10 outline outline-1 outline-slate-300 p-2"/>
-              <input type="text" placeholder="Email" className="h-10 outline outline-1 outline-slate-300 p-2"/>
-              {/* Populate the select with options dynamically */}
-                <select 
-                  className="h-10 outline outline-1 outline-slate-300"
-                  value={officeName}
-                  onChange={(e) => setOfficeName(e.target.value)}
-                >
-                  <option value="" disabled>Select Office</option>
-                  {/* Dynamically render the office options */}
-                  {offices.map((office) => (
-                    <option key={office.id} value={office.office_name}>
-                      {office.office_name}
-                    </option>
-                  ))}
-                </select>
-              <div className="w-full h-96 flex items-end justify-end">
-                <button className="bg-blue-500 w-[20%] rounded-lg h-10 hover:bg-green-500 text-white p-1">Add</button>
+    <div className="w-1/2 h-screen p-2">
+
+          <p className=" text-2xl mb-3">Create Signatory</p>
+          <div className="w-full h-screen flex gap-2 flex-col">
+            <input type="text" placeholder="Enter Fullname" className="h-10 outline outline-1 outline-slate-300 p-2"/>
+            <input type="text" placeholder="Email" className="h-10 outline outline-1 outline-slate-300 p-2"/>
+            {/* Populate the select with options dynamically */}
+              <select 
+                className="h-10 outline outline-1 outline-slate-300"
+                value={officeName}
+                onChange={(e) => setOfficeName(e.target.value)}
+              >
+                <option value="" disabled>Select Office</option>
+                {/* Dynamically render the office options */}
+                {offices.map((office) => (
+                  <option key={office.id} value={office.office_name}>
+                    {office.office_name}
+                  </option>
+                ))}
+              </select>
+              <div>
+              <div>
+      <h2>Select Course</h2>
+      
+      {/* Main List of checkboxes */}
+      <div className="main-checkboxes">
+        {mainItems.map(item => (
+          <div key={item.id}>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedMain.includes(item.id)}
+                onChange={() => handleMainCheckboxChange(item.id)}
+              />
+              {item.label}
+            </label>
+
+            {/* Nested checkboxes visible when the main item is selected */}
+            {selectedMain.includes(item.id) && (
+              <div className="nested-checkboxes" style={{ paddingLeft: '20px' }}>
+                {nestedItems[item.id].map(subItem => (
+                  <div key={subItem.id}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={nestedSelections[item.id]?.includes(subItem.id) || false}
+                        onChange={() => handleNestedCheckboxChange(item.id, subItem.id)}
+                      />
+                      {subItem.label}
+                    </label>
+
+                    {/* Third-level nested checkboxes visible when a second-level item is selected */}
+                    {nestedSelections[item.id]?.includes(subItem.id) && (
+                      <div className="third-level-checkboxes" style={{ paddingLeft: '40px' }}>
+                        {thirdLevelItems[item.id]?.[subItem.id]?.map(thirdItem => (
+                          <div key={thirdItem.id}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={thirdLevelSelections[item.id]?.[subItem.id]?.includes(thirdItem.id) || false}
+                                onChange={(e) => handleThirdLevelCheckboxChange(e, item.id, subItem.id, thirdItem.id)}
+                              />
+                              {thirdItem.label}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+
+    </div>
+          {/* <Tabs tabs={tabsData} /> */}
+            <div className="w-full h-96 flex">
+              <button className="bg-blue-500 w-[20%] rounded-lg h-10 hover:bg-green-500 text-white p-1" onClick={handleSaveSignatory}>Add</button>
             </div>
           </div>
     </div>
@@ -732,7 +787,45 @@ const handleUpdateCourse = async () => {
         </div>
       )}
       {/* Add School Year Floating Dialog */}
-     
+      {showAddSchoolYearDialog && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h2 className="text-lg font-semibold mb-4">Add School Year</h2>
+
+            {/* Show success or error messages */}
+            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+            {successMessage && (
+              <div className="text-green-500 text-sm mb-4">{successMessage}</div>
+            )}
+
+            <div className="mb-4">
+              <label className="block text-sm">School Year</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={schoolYear}
+                onChange={(e) => setSchoolYear(e.target.value)}
+                placeholder="Enter School Year (e.g., 2024-2025)"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                onClick={() => setShowAddSchoolYearDialog(false)} // Close the dialog
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                onClick={handleAddSchoolYear} // Trigger the add school year action
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Add Section Floating Dialog */}
       {showAddSection && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
@@ -800,50 +893,6 @@ const handleUpdateCourse = async () => {
               <button
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                 onClick={handleAddSchoolYear} // Trigger the add school year action
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-       {showAddYearLevelDialog && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-lg font-semibold mb-4">Add Year Level</h2>
-
-            {/* Display error or success messages */}
-            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-            {successMessage && (
-              <div className="text-green-500 text-sm mb-4">{successMessage}</div>
-            )}
-
-            <div className="mb-4">
-              <label className="block text-sm">Year Level</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={yearLevel}
-                onChange={(e) => setYearLevel(e.target.value)}
-                placeholder="Enter Year Level (e.g., Grade 10)"
-              />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-                onClick={() => {
-                  setShowAddYearLevel(false);
-                  setError('');
-                  setSuccessMessage('');
-                  setYearLevel('');
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                onClick={handleSubmit}
               >
                 Add
               </button>

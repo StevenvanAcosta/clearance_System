@@ -67,11 +67,11 @@ function Login() {
             <div className="w-full h-screen flex flex-col bg-[#25632D]">
                 <form onSubmit={handleSubmit} className="flex">
                     <div className="w-1/2 h-full justify-center flex items-center flex-col">
-                        <p className="text-white font-bold text-6xl flex justify-center items-center gap-2 ">
+                        {/* <p className="text-white font-bold text-6xl flex justify-center items-center gap-2 ">
                             <img src={BpcLogo}
                             className="w-16 h-fit flex mt-2 " />
                             BPC
-                        </p>
+                        </p> */}
                         <p className="text-white font-semibold text-4xl">Clearance System</p>
                     </div>
                     <div className="w-1/2 h-screen flex flex-col justify-center items-center">
